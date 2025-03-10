@@ -1,7 +1,7 @@
 module.exports = {
   // 配置项...
   // 例如：
-  publicPath: '/',
+  publicPath: '/YuanChat/',
   outputDir: 'dist',
   // 其他配置...
 };
