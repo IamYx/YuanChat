@@ -84,7 +84,8 @@ export default {
       this.nim = NIM.getInstance({
         appkey: nimConfig[0],
         debugLevel: "debug",
-        apiVersion: "v2"
+        apiVersion: "v2",
+        enableV2CloudConversation: true,
       });
       if (this.nim) {
         this.$store.commit('setNim', this.nim);
@@ -103,6 +104,7 @@ export default {
     } else {
       console.log('=== NIM 不需要初始化');
     }
+    this.getConversationList();
     this.nim.V2NIMConversationService.on("onSyncFinished", () => {
       console.log('=== NIM 同步完成');
       this.syncFinish = true;

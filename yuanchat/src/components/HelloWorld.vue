@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import NIM from 'nim-web-sdk-ng';
+import V2NIM from 'nim-web-sdk-ng';
 import router from '@/router';
 
 const APPKEY = '4727023efa991d31d61b3b32e819bd5b';
@@ -23,21 +23,49 @@ export default {
       nim: null
     };
   },
+  mounted() {
+    const params1 = {
+          "appkey": APPKEY,
+          "debugLevel": "debug",
+          "apiVersion": "v2",
+          "enableV2CloudConversation": true,
+      }
+      const params2 = {
+          "V2NIMLoginServiceConfig": {
+              "lbsUrls": ["https://lbs.netease.im/lbs/webconf.jsp"
+              ],
+              "linkUrl": "weblink.netease.im:443"
+          },
+      }
+
+      this.nim = V2NIM.getInstance(params1, params2);
+
+      console.log('=== 初始化成功');
+  },
   methods: {
-    handleLogin() {
-      this.nim = NIM.getInstance({
-        appkey: APPKEY,
-        debugLevel: "debug",
-        apiVersion: "v2"
-      });
+    async handleLogin() {
+      // this.nim = NIM.getInstance({
+      //   appkey: APPKEY,
+      //   debugLevel: "debug",
+      //   apiVersion: "v2",
+      //   lbsUrls: ['https://yunxin.yto56test.com:7443/lbs/webconf.jsp'],
+      //   linkUrl: 'yunxin.yto56test.com:7443',
+      // });
 
       this.$store.commit('setNim', this.nim); 
 
-      this.nim.V2NIMLoginService.login(this.username, this.password, {
+      await this.nim.V2NIMLoginService.login(this.username, this.password, {
         "forceMode": false
       }).then(() => {
         console.log('=== 登录成功');
         this.$store.commit('setNimConfig', [APPKEY, this.username, this.password]);
+        router.push({ name: 'ConversationList' })
+              .then(() => {
+                  console.log('=== 成功跳转到了 ConversationList 页面');
+              })
+              .catch((error) => {
+                  console.error('=== 路由跳转失败:', error);
+              });
       }).catch((err) => {
         console.error('=== 登录失败:', err);
       });
@@ -50,13 +78,6 @@ export default {
           case 1:
             console.log('=== 登录成功');
             // Login successful, navigate to the conversation list page
-            router.push({ name: 'ConversationList' })
-              .then(() => {
-                  console.log('=== 成功跳转到了 ConversationList 页面');
-              })
-              .catch((error) => {
-                  console.error('=== 路由跳转失败:', error);
-              });
             break;
           case 2:
             console.log('=== 登录中');
